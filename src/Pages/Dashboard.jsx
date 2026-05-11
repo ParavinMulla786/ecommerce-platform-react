@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Navbar from "./Navbar";
+import Card from "./Card";
 
 const Dashboard = () => {
 
@@ -73,8 +75,10 @@ const Dashboard = () => {
   }
 
   return (
+    <>
+    <Navbar/>
     <div className="container-fluid">
-
+ 
       <div className="row">
 
         {/* LEFT SIDEBAR */}
@@ -127,79 +131,10 @@ const Dashboard = () => {
           <h2 className="mb-4">All Products</h2>
 
           <div className="row g-4">
-
-            {filteredProducts.length > 0 ? (
-
-              filteredProducts.map((product) => (
-
-                <div className="col-md-4" key={product.id}>
-
-                  <div className="card h-100 shadow-sm">
-
-                    {/* IMAGE */}
-                    <img
-                      src={product.thumbnail}
-                      className="card-img-top"
-                      alt={product.title}
-                    />
-
-                    <div className="card-body d-flex flex-column">
-
-                      {/* TITLE */}
-                      <h5 className="card-title">
-                        {product.title}
-                      </h5>
-
-                      {/* DESCRIPTION */}
-                      <p className="card-text">
-                        {product.description.substring(0, 60)}...
-                      </p>
-
-                      {/* CATEGORY */}
-                      <p className="text-muted">
-                        {product.category}
-                      </p>
-
-                      {/* PRICE */}
-                      <h6 className="mb-3 text-success">
-                        ₹ {product.price}
-                      </h6>
-
-                      {/* BUTTON */}
-                      <div className="d-flex gap-2 mt-auto">
-
-  {/* VIEW DETAILS BUTTON */}
-  <button
-    className="btn btn-primary w-50"
-    onClick={() => navigate(`/products/${product.id}`)}
-  >
-    View Details
-  </button>
-
-  {/* ADD TO CART BUTTON */}
-  <button
-    className="btn btn-outline-success w-50"
-    onClick={() => alert(`${product.title} added to cart`)}
-  >
-    Add To Cart
-  </button>
-
-</div>
-
-                    </div>
-
-                  </div>
-
-                </div>
-
-              ))
-
-            ) : (
-
-              <h4>No Products Found</h4>
-
-            )}
-
+ <Card
+      filteredProducts={filteredProducts}
+      navigate={navigate}
+    />
           </div>
 
         </div>
@@ -207,6 +142,7 @@ const Dashboard = () => {
       </div>
 
     </div>
+    </>
   );
 };
 

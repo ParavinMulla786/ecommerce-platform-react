@@ -4,9 +4,10 @@ import './index.css'
 import App from './App.jsx'
 // main.jsx or index.js
 import 'bootstrap/dist/css/bootstrap.min.css';
+import Themeprovider from './Themeprovider.jsx';
 
 createRoot(document.getElementById('root')).render(
-  <StrictMode>
+  <Themeprovider>
     <App />
-  </StrictMode>,
+  </Themeprovider>,
 )

@@ -5,6 +5,7 @@ import Register from "./Pages/Register";
 import Login from "./Pages/Login";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Navbar from "./Pages/Navbar";
 
 function App() {
   return (
@@ -13,7 +14,7 @@ function App() {
 
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register/>} />
-      
+         
         {/* Home Page */}
         <Route path="/" element={<Dashboard />} />
 
