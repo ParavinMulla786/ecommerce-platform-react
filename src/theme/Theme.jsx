@@ -1,5 +1,3 @@
-// Theme.jsx
-
 import React, { useContext } from "react";
 import { ThemeContext } from "./Themeprovider";
 import { FaToggleOff } from "react-icons/fa";

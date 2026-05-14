@@ -1,11 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import Navbar from "./Navbar";
 import Card from "./Card";
 
 const Dashboard = () => {
-
-  const navigate = useNavigate();
 
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
@@ -16,43 +12,59 @@ const Dashboard = () => {
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
 
-  async function fetchData() {
+  // FETCH PRODUCTS
+  const fetchData = async () => {
+
     try {
-      const res = await fetch("https://dummyjson.com/products");
+
+      const res = await fetch(
+        "https://dummyjson.com/products"
+      );
+
       const data = await res.json();
 
       setProducts(data.products);
       setFilteredProducts(data.products);
 
     } catch (err) {
+
       setError(true);
       console.log(err);
 
     } finally {
-      setLoading(false);
-    }
-  }
 
+      setLoading(false);
+
+    }
+  };
+
+  // API CALL
   useEffect(() => {
     fetchData();
   }, []);
 
-  // FILTER + SEARCH
+  // SEARCH + FILTER
   useEffect(() => {
 
     let updatedProducts = products;
 
-    // SEARCH FILTER
+    // SEARCH
     if (search !== "") {
-      updatedProducts = updatedProducts.filter((product) =>
-        product.title.toLowerCase().includes(search.toLowerCase())
+
+      updatedProducts = updatedProducts.filter(
+        (product) =>
+          product.title
+            .toLowerCase()
+            .includes(search.toLowerCase())
       );
     }
 
     // CATEGORY FILTER
     if (selectedCategory !== "All") {
+
       updatedProducts = updatedProducts.filter(
-        (product) => product.category === selectedCategory
+        (product) =>
+          product.category === selectedCategory
       );
     }
 
@@ -63,38 +75,55 @@ const Dashboard = () => {
   // UNIQUE CATEGORIES
   const categories = [
     "All",
-    ...new Set(products.map((product) => product.category)),
+    ...new Set(
+      products.map(
+        (product) => product.category
+      )
+    ),
   ];
 
+  // LOADING
   if (loading) {
-    return <h2 className="text-center mt-5">Loading...</h2>;
+    return (
+      <div className="text-center mt-5">
+        <div className="spinner-border text-primary"></div>
+      </div>
+    );
   }
 
+  // ERROR
   if (error) {
-    return <h2 className="text-center mt-5">Something went wrong</h2>;
+    return (
+      <h2 className="text-center mt-5 text-danger">
+        Unable to load products
+      </h2>
+    );
   }
 
   return (
-    <>
-    <Navbar/>
+
     <div className="container-fluid">
- 
+
       <div className="row">
 
         {/* LEFT SIDEBAR */}
-        <div className="col-md-3 bg-secondary text-white min-vh-100 p-4">
+        <div className="col-md-3 bg-dark text-white min-vh-100 p-4">
 
           <h3 className="mb-4">My Store</h3>
 
           {/* SEARCH */}
           <div className="mb-4">
+
             <input
               type="text"
               className="form-control"
               placeholder="Search products..."
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(e) =>
+                setSearch(e.target.value)
+              }
             />
+
           </div>
 
           {/* CATEGORY FILTER */}
@@ -104,7 +133,7 @@ const Dashboard = () => {
 
             {categories.map((category, index) => (
 
-              <li className="mb-2" key={index}>
+              <li key={index} className="mb-2">
 
                 <button
                   className={`btn w-100 ${
@@ -112,7 +141,9 @@ const Dashboard = () => {
                       ? "btn-light text-dark"
                       : "btn-outline-light"
                   }`}
-                  onClick={() => setSelectedCategory(category)}
+                  onClick={() =>
+                    setSelectedCategory(category)
+                  }
                 >
                   {category}
                 </button>
@@ -128,13 +159,16 @@ const Dashboard = () => {
         {/* RIGHT PRODUCTS SECTION */}
         <div className="col-md-9 p-4">
 
-          <h2 className="mb-4">All Products</h2>
+          <h2 className="mb-4">
+            All Products
+          </h2>
 
           <div className="row g-4">
- <Card
-      filteredProducts={filteredProducts}
-      navigate={navigate}
-    />
+
+            <Card
+              filteredProducts={filteredProducts}
+            />
+
           </div>
 
         </div>
@@ -142,7 +176,6 @@ const Dashboard = () => {
       </div>
 
     </div>
-    </>
   );
 };
 

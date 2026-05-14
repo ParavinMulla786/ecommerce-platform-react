@@ -6,7 +6,7 @@ import App from "./App.jsx";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 
-import Themeprovider from "./Themeprovider.jsx";
+import Themeprovider from "./theme/ThemeProvider.jsx";
 import CartProvider from "./Cart/CartProvider.jsx";
 
 createRoot(document.getElementById("root")).render(

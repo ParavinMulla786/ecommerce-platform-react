@@ -1,83 +1,51 @@
-export const initialState = {
+// INITIAL STATE
+export const cartInitialState = {
   cart: [],
+  discount: 5,
+  platformFee: 100,
+  deliveryCharges: 50,
+  totalAmount: 0,
+  len: 0,
 };
 
-export const cartReducer = (state, action) => {
+// CALCULATION FUNCTION
+function calculateAmount(
+  uCart,
+  dis,
+  platFee,
+  delCharge
+) {
+  const tAmount = uCart.reduce(
+    (total, item) => {
+      return (
+        total +
+        item.productPRICE *
+          item.productQuantity
+      );
+    },
+    0
+  );
 
+  const discountAmount =
+    tAmount - tAmount * (dis / 100);
+
+  const total =
+    discountAmount + platFee + delCharge;
+
+  return {
+    cart: uCart,
+    discount: dis,
+    platformFee: platFee,
+    deliveryCharges: delCharge,
+    totalAmount: total,
+    len: uCart.length,
+  };
+}
+
+// REDUCER
+export function cartReducer(state, action) {
   switch (action.type) {
 
     // ADD TO CART
-    case "ADD_TO_CART":
-
-      const existingProduct = state.cart.find(
-        (item) => item.id === action.payload.id
-      );
-
-      // IF PRODUCT ALREADY EXISTS
-      if (existingProduct) {
-
-        const updatedCart = state.cart.map((item) =>
-          item.id === action.payload.id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
-        );
-
-        return {
-          ...state,
-          cart: updatedCart,
-        };
-      }
-
-      // NEW PRODUCT ADD
-      return {
-        ...state,
-        cart: [
-          ...state.cart,
-          { ...action.payload, quantity: 1 },
-        ],
-      };
-
-    // REMOVE FROM CART
-    case "REMOVE_FROM_CART":
-
-      return {
-        ...state,
-        cart: state.cart.filter(
-          (item) => item.id !== action.payload
-        ),
-      };
-
-    // INCREASE QUANTITY
-    case "INCREASE_QUANTITY":
-
-      return {
-        ...state,
-        cart: state.cart.map((item) =>
-          item.id === action.payload
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
-        ),
-      };
-
-    // DECREASE QUANTITY
-    case "DECREASE_QUANTITY":
-
-      return {
-        ...state,
-        cart: state.cart.map((item) =>
-          item.id === action.payload
-            ? {
-                ...item,
-                quantity:
-                  item.quantity > 1
-                    ? item.quantity - 1
-                    : 1,
-              }
-            : item
-        ),
-      };
-
-    default:
-      return state;
-  }
-};
+    case "ADD_TO_CART": {
+      const index = state.cart.find

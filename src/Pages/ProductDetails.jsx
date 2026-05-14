@@ -1,204 +1,221 @@
-import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import React, {
+  useContext,
+  useEffect,
+  useState,
+} from "react";
+
+import {
+  Link,
+  useParams,
+} from "react-router-dom";
+
+import { ThemeContext } from "../theme/ThemeProvider";
+
+import "./ProductDetails.css";
 
 const ProductDetails = () => {
 
-  const { id } = useParams();
-
   const [product, setProduct] = useState(null);
+
   const [loading, setLoading] = useState(true);
+
   const [error, setError] = useState(false);
 
+  const { theme } =
+    useContext(ThemeContext);
+
+  // GET PRODUCT ID
+  const { id } = useParams();
+
+  // FETCH DATA
+  async function fetchData() {
+
+    try {
+
+      const res = await fetch(
+        "https://dummyjson.com/products"
+      );
+
+      const data = await res.json();
+
+      // FIND PRODUCT
+      const foundProduct =
+        data.products.find(
+          (item) =>
+            item.id === Number(id)
+        );
+
+      setProduct(foundProduct);
+
+    } catch (err) {
+
+      setError(true);
+      console.log(err);
+
+    } finally {
+
+      setLoading(false);
+
+    }
+  }
+
+  // API CALL
   useEffect(() => {
+    fetchData();
+  }, []);
 
-    fetch(`https://dummyjson.com/products/${id}`)
-      .then((res) => res.json())
-      .then((data) => {
-        setProduct(data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.log(err);
-        setError(true);
-        setLoading(false);
-      });
+  // ADD TO CART
+  function handleAddToCart() {
 
-  }, [id]);
+    alert(
+      `${product.title} added to cart`
+    );
+  }
 
   // LOADING
   if (loading) {
     return (
-      <div className="d-flex justify-content-center align-items-center vh-100">
-        <h2 className="text-primary">Loading Product...</h2>
-      </div>
+      <h1 className="text-center mt-5">
+        Loading...
+      </h1>
     );
   }
 
   // ERROR
   if (error || !product) {
     return (
-      <div className="d-flex justify-content-center align-items-center vh-100">
-        <h2 className="text-danger">Product Not Found</h2>
-      </div>
+      <h1 className="text-center mt-5 text-danger">
+        Product Not Found
+      </h1>
     );
   }
 
   return (
-    <div className="container py-5">
 
-      <div className="card border-0 shadow-lg rounded-4 overflow-hidden">
+    <div
+      className={`product-page ${
+        theme === "dark"
+          ? "dark-theme"
+          : ""
+      }`}
+    >
 
-        <div className="row g-0">
+      {/* BACK BUTTON */}
+      <Link
+        className="back-btn"
+        to="/"
+      >
+        ← Back
+      </Link>
 
-          {/* LEFT IMAGE SECTION */}
-          <div className="col-md-5 bg-light d-flex align-items-center justify-content-center p-4">
+      <div className="product-container">
 
-            <img
-              src={product.thumbnail}
-              className="img-fluid rounded-4"
-              alt={product.title}
-              style={{
-                maxHeight: "400px",
-                objectFit: "contain"
-              }}
-            />
+        {/* LEFT IMAGE SECTION */}
+        <div className="image-section">
+
+          <img
+            src={product.thumbnail}
+            alt={product.title}
+            className="main-image"
+          />
+
+          {/* IMAGE GALLERY */}
+          <div className="image-gallery">
+
+            {product?.images?.map(
+              (img, index) => (
+
+                <img
+                  key={index}
+                  src={img}
+                  alt="product"
+                  className="small-image"
+                />
+
+              )
+            )}
 
           </div>
 
-          {/* RIGHT DETAILS SECTION */}
-          <div className="col-md-7">
+        </div>
 
-            <div className="p-4 p-md-5">
+        {/* RIGHT DETAILS */}
+        <div className="details-section">
 
-              {/* CATEGORY */}
-              <span className="badge bg-primary mb-3 px-3 py-2">
-                {product.category}
-              </span>
+          <span className="category">
+            {product.category}
+          </span>
 
-              {/* TITLE */}
-              <h1 className="fw-bold mb-3">
-                {product.title}
-              </h1>
+          <h1>{product.title}</h1>
 
-              {/* DESCRIPTION */}
-              <p className="text-muted fs-5">
-                {product.description}
-              </p>
+          <h2 className="price">
+            ${product.price}
+          </h2>
 
-              {/* PRICE */}
-              <div className="d-flex align-items-center gap-3 my-4">
+          <p className="description">
+            {product.description}
+          </p>
 
-                <h2 className="text-success fw-bold mb-0">
-                  ₹ {product.price}
-                </h2>
+          {/* PRODUCT INFO */}
+          <div className="info-grid">
 
-                <span className="badge bg-danger fs-6">
-                  {product.discountPercentage}% OFF
+            <p>
+              <strong>Brand:</strong>
+              {" "}
+              {product.brand}
+            </p>
+
+            <p>
+              <strong>Rating:</strong>
+              {" "}
+              ⭐ {product.rating}
+            </p>
+
+            <p>
+              <strong>Stock:</strong>
+              {" "}
+              {product.stock}
+            </p>
+
+            <p>
+              <strong>Discount:</strong>
+              {" "}
+              {product.discountPercentage}%
+            </p>
+
+          </div>
+
+          {/* TAGS */}
+          <div className="tags">
+
+            {product?.tags?.map(
+              (tag, index) => (
+
+                <span
+                  key={index}
+                  className="tag"
+                >
+                  {tag}
                 </span>
 
-              </div>
+              )
+            )}
 
-              {/* PRODUCT INFO */}
-              <div className="row mt-4">
+          </div>
 
-                <div className="col-md-6 mb-3">
-                  <div className="border rounded-3 p-3 h-100">
-                    <h6 className="fw-bold">Brand</h6>
-                    <p className="mb-0">{product.brand}</p>
-                  </div>
-                </div>
+          {/* BUTTONS */}
+          <div className="button-group">
 
-                <div className="col-md-6 mb-3">
-                  <div className="border rounded-3 p-3 h-100">
-                    <h6 className="fw-bold">Stock</h6>
-                    <p className="mb-0">{product.stock} Available</p>
-                  </div>
-                </div>
+            <button
+              className="cart-btn"
+              onClick={handleAddToCart}
+            >
+              Add To Cart
+            </button>
 
-                <div className="col-md-6 mb-3">
-                  <div className="border rounded-3 p-3 h-100">
-                    <h6 className="fw-bold">Rating</h6>
-                    <p className="mb-0">⭐ {product.rating}</p>
-                  </div>
-                </div>
-
-                <div className="col-md-6 mb-3">
-                  <div className="border rounded-3 p-3 h-100">
-                    <h6 className="fw-bold">Weight</h6>
-                    <p className="mb-0">{product.weight} g</p>
-                  </div>
-                </div>
-
-              </div>
-
-              {/* EXTRA INFO */}
-              <div className="mt-4">
-
-                <h4 className="fw-bold mb-3">
-                  Product Details
-                </h4>
-
-                <p>
-                  <b>Warranty:</b>{" "}
-                  {product.warrantyInformation}
-                </p>
-
-                <p>
-                  <b>Shipping:</b>{" "}
-                  {product.shippingInformation}
-                </p>
-
-                <p>
-                  <b>Availability:</b>{" "}
-                  {product.availabilityStatus}
-                </p>
-
-                <p>
-                  <b>SKU:</b>{" "}
-                  {product.sku}
-                </p>
-
-                <p>
-                  <b>Dimensions:</b>{" "}
-                  W: {product.dimensions?.width} |{" "}
-                  H: {product.dimensions?.height} |{" "}
-                  D: {product.dimensions?.depth}
-                </p>
-
-              </div>
-
-              {/* TAGS */}
-              <div className="mt-4">
-
-                <h5 className="fw-bold mb-3">
-                  Tags
-                </h5>
-
-                {product.tags?.map((tag, i) => (
-                  <span
-                    key={i}
-                    className="badge bg-dark me-2 mb-2 px-3 py-2"
-                  >
-                    #{tag}
-                  </span>
-                ))}
-
-              </div>
-
-              {/* BUTTONS */}
-              <div className="mt-5 d-flex gap-3">
-
-                <button className="btn btn-primary px-4 py-2">
-                  Add To Cart
-                </button>
-
-                <button className="btn btn-outline-dark px-4 py-2">
-                  Buy Now
-                </button>
-
-              </div>
-
-            </div>
+            <button className="buy-btn">
+              Buy Now
+            </button>
 
           </div>
 
@@ -206,52 +223,41 @@ const ProductDetails = () => {
 
       </div>
 
-      {/* REVIEWS SECTION */}
-      <div className="mt-5">
+      {/* REVIEWS */}
+      <div className="reviews-section">
 
-        <h2 className="fw-bold mb-4">
-          Customer Reviews
-        </h2>
+        <h2>Customer Reviews</h2>
 
-        <div className="row">
+        {product?.reviews?.map(
+          (review, index) => (
 
-          {product.reviews?.map((rev, i) => (
+            <div
+              key={index}
+              className="review-card"
+            >
 
-            <div className="col-md-6 mb-4" key={i}>
+              <h4>
+                {review.reviewerName}
+              </h4>
 
-              <div className="card border-0 shadow-sm rounded-4 h-100">
+              <p>
+                ⭐ {review.rating}
+              </p>
 
-                <div className="card-body p-4">
+              <p>
+                {review.comment}
+              </p>
 
-                  <div className="d-flex justify-content-between align-items-center mb-2">
-
-                    <h5 className="fw-bold mb-0">
-                      {rev.reviewerName}
-                    </h5>
-
-                    <span className="badge bg-warning text-dark">
-                      ⭐ {rev.rating}
-                    </span>
-
-                  </div>
-
-                  <p className="text-muted">
-                    {rev.comment}
-                  </p>
-
-                  <small className="text-secondary">
-                    {new Date(rev.date).toDateString()}
-                  </small>
-
-                </div>
-
-              </div>
+              <small>
+                {new Date(
+                  review.date
+                ).toLocaleDateString()}
+              </small>
 
             </div>
 
-          ))}
-
-        </div>
+          )
+        )}
 
       </div>
 
